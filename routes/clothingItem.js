@@ -6,7 +6,6 @@ const {
   updateItem,
   deleteItem,
 } = require("../controllers/clothingItem");
-// const { updateItem } = require("../controllers/clothingItems");
 
 // CRUD
 
