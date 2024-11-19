@@ -1,3 +1,4 @@
+const clothingItem = require("../models/clothingItem");
 const ClothingItem = require("../models/clothingItem");
 
 const createItem = (req, res) => {
@@ -50,4 +51,27 @@ const deleteItem = (req, res) => {
     });
 };
 
-module.exports = { createItem, getItems, updateItem, deleteItem };
+const likeItem = (req, res) => {
+  const userId = req.user_id;
+  const { itemId } = req.params;
+  clothingItem
+    .findByIdAndUpdate(itemId, { $addToSet: { likes: userId } }, { new: true })
+    .orFail()
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CaseError") {
+        return res.status().send({ message: err.message });
+      }
+    });
+};
+
+// module.exports.dislikeItem = (req, res) =>
+//   ClothingItem.findByIdAndUpdate(
+//     req.params.itemId,
+//     { $pull: { likes: req.user._id } }, // remove _id from the array
+//     { new: true }
+//   );
+//...
+
+module.exports = { createItem, getItems, updateItem, deleteItem, likeItem };
