@@ -45,8 +45,12 @@ const deleteItem = (req, res) => {
   console.log(itemId);
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(204).send({}))
+    .then((item) => res.status(204).send({ data: item }))
     .catch((err) => {
+      console.error(err);
+      if (err.name === "AssertionError") {
+        return res.status(200).send({ message: err.message });
+      }
       res.status(500).send({ message: "Error from deleteItem", err });
     });
 };
@@ -84,6 +88,7 @@ const deleteLike = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(404).send({ message: err.message });
       }
+      res.status(500).send({ message: "Internal server error" });
     });
 };
 
