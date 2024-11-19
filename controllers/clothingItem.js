@@ -42,14 +42,16 @@ const updateItem = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  console.log(itemId);
   ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
-    .then((item) => res.status(204).send({ data: item }))
+    .then((item) => {
+      if (!item) {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      res.status(200).send({ data: item });
+    })
     .catch((err) => {
-      console.error(err);
-      if (err.name === "AssertionError") {
-        return res.status(200).send({ message: err.message });
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid ID format" });
       }
       res.status(500).send({ message: "Error from deleteItem", err });
     });
