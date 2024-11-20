@@ -12,11 +12,10 @@ mongoose
   })
   .catch(console.error);
 
-const routes = require("./routes");
+// const routes = require("./routes");
 
 app.use(express.json());
 app.use("/", mainRouter);
-app.use(routes);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}...`);

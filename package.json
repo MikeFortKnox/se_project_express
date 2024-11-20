@@ -4,7 +4,9 @@
   "description": "wtwr app backend",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "lint": "npx eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mike Knox",
