@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
 
 // GET /users
 
@@ -8,7 +9,7 @@ const getUsers = (req, res) => {
     .catch((err) => {
       console.error(err);
       return res
-        .status(500)
+        .status(DEFAULT)
         .send({ message: "An error has occurred on the server" });
     });
 };
@@ -21,10 +22,10 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
+        return res.status(BAD_REQUEST).send({ message: err.message });
       }
       return res
-        .status(500)
+        .status(DEFAULT)
         .send({ message: "An error has occurred on the server" });
     });
 };
@@ -38,13 +39,13 @@ const getUser = (req, res) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         // ... fill in how to handle
-        return res.status(404).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: err.message });
       }
       if (err.name === "CastError") {
-        return res.status(400).send({ message: err.message });
+        return res.status(BAD_REQUEST).send({ message: err.message });
       }
       return res
-        .status(500)
+        .status(DEFAULT)
         .send({ message: "An error has occurred on the server" });
     });
 };
