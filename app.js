@@ -1,29 +1,29 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const mainRouter = require("./routes/index");
-
+const router = require("./routes/index");
+const { login, createUser } = require("./controllers/users"); // Adjust the path as necessary
 const app = express();
-const { PORT = 3001 } = process.env;
+const cors = require("cors");
 
+app.use(cors());
+
+app.use(express.json());
+
+// Connect to MongoDB
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
-    console.log("Connected to DataBase");
+    console.log("Connected to DB");
   })
-  .catch(console.error);
+  .catch((e) => console.error(e));
 
-// const routes = require("./routes");
+// Define routes
+app.post("/signin", login);
+app.post("/signup", createUser);
+app.use("/", router);
 
-app.use(express.json());
-app.use((req, res, next) => {
-  req.user = {
-    _id: "5d8b8592978f8bd833ca8133", // paste the _id of the test user created in the previous step
-  };
-  next();
-});
-
-app.use("/", mainRouter);
-
+// Start the server
+const { PORT = 3001 } = process.env;
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}...`);
+  console.log(`Server is running on port ${PORT}`);
 });

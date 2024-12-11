@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const auth = require("../middleware/auth");
 
 const {
   createItem,
@@ -10,12 +11,15 @@ const {
 
 // CRUD
 
-// Create
-router.post("/", createItem);
-
 // Read
 
 router.get("/", getItems);
+
+//import auth and set up a middleware for it
+router.use("/", auth);
+
+// Create
+router.post("/", createItem);
 
 // Update
 
