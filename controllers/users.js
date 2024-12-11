@@ -1,5 +1,10 @@
 const User = require("../models/user");
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  DEFAULT,
+  CONFLICT,
+} = require("../utils/errors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 // GET /users
@@ -19,29 +24,25 @@ const createUser = async (req, res) => {
   // hash the password
   const { name, email, password, avatar } = req.body;
 
-  try {
-    // Check if a user with the same email already exists
-    const existingUser = User.findOne({ email });
-    if (existingUser) {
-      return res.status(CONFLICT).send({ message: "Email already exists" });
-    }
+  // Check if a user with the same email already exists
+  User.create({ name, email, password, avatar })
 
-    // Create a new user
-    const user = User.create({ name, email, password, avatar });
-    res.status(201).send({ status: "success", data: user });
-  } catch (err) {
-    console.error(err);
-    if (err.name === "ValidationError") {
-      return res.status(BAD_REQUEST).send({ message: err.message });
-    }
-    if (err.code === 11000) {
-      // MongoDB duplicate error
-      return res.status(CONFLICT).send({ message: "Email already exists" });
-    }
-    return res
-      .status(DEFAULT)
-      .send({ message: "An error has occurred on the server" });
-  }
+    .then((user) => {
+      res.status(201).send({ status: "success", data: user });
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: err.message });
+      }
+      if (err.code === 11000) {
+        // MongoDB duplicate error
+        return res.status(CONFLICT).send({ message: "Email already exists" });
+      }
+      return res
+        .status(DEFAULT)
+        .send({ message: "An error has occurred on the server" });
+    });
 };
 
 const getCurrentUser = (req, res) => {
