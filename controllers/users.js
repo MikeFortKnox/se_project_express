@@ -21,28 +21,34 @@ const getUsers = (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  // hash the password
   const { name, email, password, avatar } = req.body;
 
-  // Check if a user with the same email already exists
-  User.create({ name, email, password, avatar })
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(CONFLICT).send({ message: "Email already exists" });
+    }
 
-    .then((user) => {
-      res.status(201).send({ status: "success", data: user });
-    })
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
-      }
-      if (err.code === 11000) {
-        // MongoDB duplicate error
-        return res.status(CONFLICT).send({ message: "Email already exists" });
-      }
-      return res
-        .status(DEFAULT)
-        .send({ message: "An error has occurred on the server" });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      avatar,
     });
+
+    // Exclude the password from the response
+    const { password: _, ...userWithoutPassword } = user.toObject(); // Use toObject() to convert Mongoose document to plain object
+    res.status(201).send({ data: userWithoutPassword });
+  } catch (err) {
+    console.error(err);
+    if (err.name === "ValidationError") {
+      return res.status(BAD_REQUEST).send({ message: err.message });
+    }
+    return res
+      .status(DEFAULT)
+      .send({ message: "An error has occurred on the server" });
+  }
 };
 
 const getCurrentUser = (req, res) => {
@@ -76,7 +82,10 @@ const login = (req, res) => {
     })
     .catch((err) => {
       // authentication error
-      res.status(401).send({ message: err.message });
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: err.message });
+      }
+      res.status(200).send({ message: err.message });
     });
 };
 
