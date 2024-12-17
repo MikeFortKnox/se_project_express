@@ -35,13 +35,19 @@ const getItems = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
-      return res.status(200).send({ data: item });
+      if (item.owner.equals(req.user._id)) {
+        return ClothingItem.findByIdAndDelete(itemId).then((deletedItem) =>
+          res.status(200).send({ data: deletedItem })
+        );
+      }
+      return res
+        .status(403)
+        .send({ message: "An error has occurred on the server" });
     })
     .catch((err) => {
       if (err.name === "CastError") {

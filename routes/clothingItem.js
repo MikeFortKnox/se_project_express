@@ -15,7 +15,7 @@ const {
 
 router.get("/", getItems);
 
-//import auth and set up a middleware for it
+// import auth and set up a middleware for it
 router.use("/", auth);
 
 // Create

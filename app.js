@@ -1,9 +1,10 @@
+const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const router = require("./routes/index");
 const { login, createUser } = require("./controllers/users"); // Adjust the path as necessary
+
 const app = express();
-const cors = require("cors");
 
 app.use(cors());
 
