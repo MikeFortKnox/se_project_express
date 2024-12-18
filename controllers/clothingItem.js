@@ -1,6 +1,11 @@
 const clothingItem = require("../models/clothingItem");
 const ClothingItem = require("../models/clothingItem");
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  DEFAULT,
+  FORBIDDEN,
+} = require("../utils/errors");
 
 const createItem = (req, res) => {
   console.log(req);
@@ -46,8 +51,8 @@ const deleteItem = (req, res) => {
         );
       }
       return res
-        .status(403)
-        .send({ message: "An error has occurred on the server" });
+        .status(FORBIDDEN)
+        .send({ message: "You may not delete another users item" });
     })
     .catch((err) => {
       if (err.name === "CastError") {

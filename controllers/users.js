@@ -6,21 +6,11 @@ const {
   NOT_FOUND,
   DEFAULT,
   CONFLICT,
+  UNAUTHORIZED,
 } = require("../utils/errors");
 
 const { JWT_SECRET } = require("../utils/constants");
 // GET /users
-
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.status(200).send(users))
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(DEFAULT)
-        .send({ message: "An error has occurred on the server" });
-    });
-};
 
 const createUser = async (req, res) => {
   const { name, email, password, avatar } = req.body;
@@ -74,6 +64,9 @@ const getCurrentUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(BAD_REQUEST).send({ message: "error" });
+  }
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // authentication successful user is in the user variable
@@ -83,33 +76,21 @@ const login = (req, res) => {
       return res.status(200).send({ token });
     })
     .catch((err) => {
-      // authentication error
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+      if (err.message === "Incorrect email or Password") {
+        return res.status(UNAUTHORIZED).send({ message: "error" });
       }
-      return res.status(400).send({ message: err.message });
+      return res.status(DEFAULT).send({ message: "error" });
     });
 };
 
 const updateUser = async (req, res) => {
-  const { name, email, password, avatar } = req.body;
+  const { name, avatar } = req.body;
 
   try {
-    // Validate input data
-    if (email && !/\S+@\S+\.\S+/.test(email)) {
-      return res.status(BAD_REQUEST).send({ message: "Invalid email format." });
-    }
-
     // Prepare the update object
     const updateData = {};
     if (name) updateData.name = name;
-    if (email) updateData.email = email;
     if (avatar) updateData.avatar = avatar;
-
-    // Hash the password if it's being updated
-    if (password) {
-      updateData.password = await bcrypt.hash(password);
-    }
 
     // Update the user in the database
     const user = await User.findByIdAndUpdate(req.user._id, updateData, {
@@ -134,4 +115,4 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, createUser, getCurrentUser, login, updateUser };
+module.exports = { createUser, getCurrentUser, login, updateUser };
