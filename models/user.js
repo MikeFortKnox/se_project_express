@@ -44,7 +44,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
         if (isCorrect) {
           return user;
         }
-        throw new Error("Incorrect email or password");
+        throw new Error("Incorrect email or Password");
       });
     });
 };
