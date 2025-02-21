@@ -8,6 +8,7 @@ const {
   deleteItem,
   deleteLike,
 } = require("../controllers/clothingItem");
+const { validateCardBody } = require("../middleware/validation");
 
 // CRUD
 
@@ -19,7 +20,7 @@ router.get("/", getItems);
 router.use("/", auth);
 
 // Create
-router.post("/", createItem);
+router.post("/", validateCardBody, createItem);
 
 // Update
 
