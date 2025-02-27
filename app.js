@@ -6,8 +6,8 @@ const mongoose = require("mongoose");
 const router = require("./routes/index");
 const { errors } = require("celebrate");
 const { login, createUser } = require("./controllers/users"); // Adjust the path as necessary
-const errorHandler = require("./middlewares/error-handler");
-const { requestLogger, errorLogger } = require("./middlewares/logger");
+const errorHandler = require("./middleware/error-handler");
+const { requestLogger, errorLogger } = require("./middleware/logger");
 
 const app = express();
 
@@ -23,9 +23,15 @@ mongoose
   })
   .catch((e) => console.error(e));
 
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 // Define routes
 app.use(requestLogger);
-app.use(routes);
+app.use(router);
 app.use(errorLogger);
 app.post("/signin", login);
 app.post("/signup", createUser);
