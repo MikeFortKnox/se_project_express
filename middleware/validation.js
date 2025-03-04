@@ -39,33 +39,46 @@ module.exports.validateUserCreate = celebrate({
       "string.empty": 'The "name" field must be filled in',
     }),
 
-    imageUrl: Joi.string().required().custom(validateURL).messages({
+    avatar: Joi.string().required().custom(validateURL).messages({
       "string.empty": 'The "imageUrl" field must be filled in',
       "string.uri": 'the "imageUrl" field must be a valid url',
     }),
-    Email: Joi.string().required().email().valid().messages({
+    email: Joi.string().required().email().valid().messages({
       "string.empty": 'The "email" field must be filled in',
     }),
-    Password: Joi.string().required().messages({
+    password: Joi.string().required().messages({
       "string.empty": 'The "email" field must be filled in',
+    }),
+  }),
+});
+
+module.exports.validateUserUpdate = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).messages({
+      "string.min": 'The minimum length of the "name" field is 2',
+      "string.max": 'The maximum length of the "name" field is 30',
+    }),
+
+    avatar: Joi.string().custom(validateURL).messages({
+      "string.uri": 'the "imageUrl" field must be a valid url',
     }),
   }),
 });
 
 module.exports.validateUserLogin = celebrate({
   body: Joi.object().keys({
-    Email: Joi.string().required().email().valid().messages({
+    email: Joi.string().required().email().valid().messages({
       "string.empty": 'The "email" field must be filled in',
     }),
-    Password: Joi.string().required().messages({
+    password: Joi.string().required().messages({
       "string.empty": 'The "email" field must be filled in',
     }),
   }),
 });
 
 module.exports.validateId = celebrate({
-  body: Joi.object().keys({
-    Id: Joi.string().required().custom(ObjectId).messages({
+  params: Joi.object().keys({
+    itemId: Joi.string().required().custom(ObjectId).messages({
       "id.uri": 'The "ID" must be valid',
     }),
   }),

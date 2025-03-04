@@ -3,11 +3,15 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
-const router = require("./routes/index");
 const { errors } = require("celebrate");
+const router = require("./routes/index");
 const { login, createUser } = require("./controllers/users"); // Adjust the path as necessary
 const errorHandler = require("./middleware/error-handler");
 const { requestLogger, errorLogger } = require("./middleware/logger");
+const {
+  validateUserCreate,
+  validateUserLogin,
+} = require("./middleware/validation");
 
 const app = express();
 
@@ -31,11 +35,10 @@ app.get("/crash-test", () => {
 
 // Define routes
 app.use(requestLogger);
-app.use(router);
-app.use(errorLogger);
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post("/signin", validateUserLogin, login);
+app.post("/signup", validateUserCreate, createUser);
 app.use("/", router);
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
