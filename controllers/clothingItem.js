@@ -76,7 +76,7 @@ const updateLike = (req, res, next) => {
       console.error(err);
       if (err.name === "CastError") {
         // return res.status(BAD_REQUEST).send({ message: err.message });
-        return next(new BadRequestError(err));
+        return next(new BadRequestError("Invalid data"));
       }
       if (err.name === "DocumentNotFoundError") {
         // return res.status(NOT_FOUND).send({ message: err.message });
@@ -100,7 +100,7 @@ const deleteLike = (req, res, next) => {
       console.error(err);
       if (err.name === "CastError") {
         // return res.status(BAD_REQUEST).send({ message: err.message });
-        return next(new BadRequestError(err));
+        return next(new BadRequestError("Item not found"));
       }
       if (err.name === "DocumentNotFoundError") {
         // return res.status(NOT_FOUND).send({ message: err.message });

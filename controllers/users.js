@@ -34,7 +34,7 @@ const createUser = async (req, res, next) => {
     console.error(err);
     if (err.name === "ValidationError") {
       // return res.status(BAD_REQUEST).send({ message: err.message });
-      return next(new BadRequestError(err));
+      return next(new BadRequestError("Invalid data"));
     }
     // return res
     //   .status(DEFAULT)
@@ -52,11 +52,11 @@ const getCurrentUser = (req, res, next) => {
       if (err.name === "DocumentNotFoundError") {
         // ... fill in how to handle
         // return res.status(NOT_FOUND).send({ message: err.message });
-        return next(new NotFoundError(err));
+        return next(new NotFoundError("User not found"));
       }
       if (err.name === "CastError") {
         // return res.status(BAD_REQUEST).send({ message: err.message });
-        return next(new BadRequestError(err));
+        return next(new BadRequestError("Invalid data"));
       }
       // return res
       //   .status(DEFAULT)
@@ -92,7 +92,7 @@ const login = (req, res, next) => {
         // return res
         //   .status(UNAUTHORIZED)
         //   .send({ message: "Incorrect username or Password " });
-        return next(new UnauthorizedError(err));
+        return next(new UnauthorizedError("Incorrect username or password"));
       }
       // return res.status(DEFAULT).send({ message: "error" });
       return next(err);
@@ -121,11 +121,11 @@ const updateUser = async (req, res, next) => {
     console.error(err);
     if (err.name === "DocumentNotFoundError") {
       // return res.status(NOT_FOUND).send({ message: "User not found." });
-      return next(new NotFoundError(err));
+      return next(new NotFoundError("User not found"));
     }
     if (err.name === "ValidationError") {
       // return res.status(BAD_REQUEST).send({ message: err.message });
-      return next(new BadRequestError(err));
+      return next(new BadRequestError("User not found"));
     }
     // return res
     //   .status(DEFAULT)

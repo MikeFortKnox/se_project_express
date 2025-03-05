@@ -10,6 +10,6 @@ router.use("/items", clothingItemRouter);
 router.use("/", auth);
 router.use("/users", userRouter);
 
-router.use((next) => next(new NotFoundError("Router not found")));
+router.use((req, res, next) => next(new NotFoundError("Router not found")));
 
 module.exports = router;

@@ -9,7 +9,7 @@ const validateURL = (value, helpers) => {
 };
 
 const ObjectId = (value, helpers) => {
-  if (validator.isId(value)) {
+  if (validator.isMongoId(value)) {
     return value;
   }
   return helpers.error("id.uri");
